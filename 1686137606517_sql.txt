@@ -1,0 +1,99 @@
+1) 
+დაწერეთ სკრიპტი, რომელიც შექმნის INT ტიპის სკალარულ ფუნქციას სახელად
+kvardatebisjami, რომელსაც ექნება 2 INT ტიპის პარამეტრი და რომელიც დააბრუნებს ამ
+ორი რიცხვის კვადრატების ჯამს.
+CREATE  FUNction kvadatbisJami
+(
+  @n int,
+  @m int
+)
+returns  int
+AS
+Begin
+     DeCLare  @result int;
+ SET @result=(@n *@n)+(@m* @m);
+ return @result;
+ END;
+
+2) 
+დაწერეთ სკრიპტი, რომელიც შექმნის nvarchar(200) ტიპის სკალარულ ფუნქციას
+სახელად fullname, რომელსაც ექნება 2 nvarchar(100) ტიპის პარამეტრი და რომელიც
+დააბრუნებს ამ ორი პარამეტრის გაერთიანების (კონკატენაციის) შედეგად მიღებულ
+მნიშვნელობას.
+CREATE  FUNction  FullName
+(
+ @firstName nvarchar(100),
+ @lastName nvarchar(100)
+)
+returns  nvarchar(100)
+AS
+Begin
+     DeCLare  @result nvarchar(100)
+ SET @result=concat(@firstName,' ', @lastName)
+ return @result;
+ END;
+3) 
+დაწერეთ სკრიპტი, რომელიც შექმნის Table Valued Function ტიპის ფუნქციას სახელად
+get_student, რომელსაც ექნება nvarchar(50) ტიპის პარამეტრი სტუდენტის კოდისათვის,
+რომლის გადაცემის შედეგად დააბრუნებს ცხრილს student ცხრილიდან.
+CREATE  FUNction  get_student
+(
+@studentcode  nvarchar(50)
+)
+returns  TABLE
+AS
+RETURN (
+select *
+from student
+where studentcode=@studentcode
+)
+GO
+4)
+დაწერეთ ტრიგერი, სახელად insertstudent, რომელიც იქნება დაკავშირებული studenti
+ცხრილთან, ამუშავდება ისეთი მონაცემის დამატებისას, როდესაც saxeli ველში
+ჩაიწერება სიტყვა “ტრიგერი” და გამოიტანს რაიმე შეტყობინებას.
+
+CREATE TRIGGER insertstudent
+ON student 
+For insert 
+AS 
+Begin
+ declare @saxeli NVARCHAR(50)
+ if @saxeli='trigger'
+begin 
+RollBack
+END 
+print 'Tqvensmier Setanii saxeli as trigger'
+END
+Go
+5)დაწერეთ ტრიგერი, სახელად updatesagani, რომელიც ამუშავედება იმ შემთხვევაში, თუ
+agani ცხრილში მოხდება sagniskodi-ს ცვლილება შემდეგნაირად: sagniskodi-ში ჩაიწერება
+სიტყვა „კოდი“. რასაკვირველია, ასეთი ტიპის მონაცემი ცვლილება არ უნდა მოხდეს
+და გამოიტანოს რაიმე შეტყობინება.
+
+CREATE TRIGGER updateSagani
+ON sagani
+AFTER update
+AS 
+Begin
+if EXISTS(SELECT * sagani WHERE SAGNISKodi like '%code%')
+bEgIn 
+print'sagniskodshi moxdacvlileba'
+Rollback;
+end
+6)დაწერეთ ტრიგერი სახელად deletesagani, რომელიც ამუშავდება იმ შემთხვევაში,
+როდესაც მოხდება ისეთი საგნის წაშლა, რომლის krediti იქნება 6 და sagniskodi შეიცავს
+‘MATH’-ს და რა თქმა უნდა არ უნდა წაშალოს ასეთი ტიპის მონაცემი, შესაბამისად
+უნდა გამოიტანოს რაიმე შეტყობინება.
+CREATE TRIGGER deletesagani
+ON sagani
+INSTEAD OF DELETE
+AS
+BEGIN
+IF EXISTS (SELECT * FROM deleted WHERE credit = 6 AND sagniskodi = 'MATH')
+  BEGIN
+ PRINT 'საგანი იშლებარადგან კრედიტი არის 6 და საგანის კოდი შეიცავს math'
+  ROLLBACK;
+   END
+
+
